@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pinkston Training">
+<title>Pinkston · 2026 Training Plan</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+body { background:#0d0f0e; color:#e8e0d0; font-family:Georgia,'Times New Roman',serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
+.header { background:linear-gradient(135deg,#0d0f0e 0%,#1a1f1a 50%,#0f1410 100%); border-bottom:1px solid #2a2f2a; padding:36px 20px 28px; position:relative; overflow:hidden; }
+.header::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 20% 50%,rgba(126,184,126,0.06) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(200,169,110,0.05) 0%,transparent 50%); pointer-events:none; }
+.header-inner { position:relative; max-width:760px; margin:0 auto; }
+.eyebrow { font-size:11px; letter-spacing:0.25em; color:#7eb87e; text-transform:uppercase; margin-bottom:8px; }
+.header h1 { font-size:clamp(24px,5vw,38px); font-weight:400; line-height:1.1; color:#f0e8d0; letter-spacing:-0.02em; }
+.header h1 span { color:#c8a96e; }
+.races { margin-top:14px; display:flex; gap:18px; flex-wrap:wrap; }
+.race-badge { display:flex; align-items:center; gap:7px; }
+.race-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.race-badge span { font-size:12px; color:#b0a890; }
+.race-badge strong { color:#e8e0d0; font-weight:400; }
+.mode-nav { background:#0e100e; border-bottom:1px solid #1c1e1c; overflow-x:auto; scrollbar-width:none; }
+.mode-nav::-webkit-scrollbar { display:none; }
+.mode-nav-inner { display:flex; max-width:760px; margin:0 auto; }
+.mode-btn { background:none; border:none; cursor:pointer; padding:14px 16px; border-bottom:2px solid transparent; font-size:12px; letter-spacing:0.1em; font-family:Georgia,serif; white-space:nowrap; color:#555; text-transform:uppercase; -webkit-appearance:none; transition:color .2s; }
+.mode-btn.active { color:var(--mc); border-bottom-color:var(--mc); }
+.phase-nav { background:#111412; border-bottom:1px solid #222; overflow-x:auto; scrollbar-width:none; }
+.phase-nav::-webkit-scrollbar { display:none; }
+.phase-nav-inner { display:flex; max-width:760px; margin:0 auto; min-width:max-content; padding:0 4px; }
+.phase-btn { background:none; border:none; cursor:pointer; padding:10px 12px; border-bottom:2px solid transparent; font-size:11px; letter-spacing:0.05em; font-family:Georgia,serif; white-space:nowrap; color:#555; -webkit-appearance:none; transition:color .2s; }
+.phase-btn.active { color:var(--pc); border-bottom-color:var(--pc); }
+.split-nav { background:#111412; border-bottom:1px solid #222; overflow-x:auto; scrollbar-width:none; }
+.split-nav::-webkit-scrollbar { display:none; }
+.split-nav-inner { display:flex; max-width:760px; margin:0 auto; min-width:max-content; padding:0 4px; }
+.split-btn { background:none; border:none; cursor:pointer; padding:10px 14px; border-bottom:2px solid transparent; font-size:11px; letter-spacing:0.07em; font-family:Georgia,serif; white-space:nowrap; color:#555; text-transform:uppercase; -webkit-appearance:none; transition:color .2s; }
+.split-btn.active { color:var(--sc); border-bottom-color:var(--sc); }
+.main { max-width:760px; margin:0 auto; padding:20px 16px 60px; }
+.phase-header { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:20px; }
+.phase-title { font-size:21px; font-weight:400; }
+.phase-sub { font-size:13px; color:#888; margin-top:4px; }
+.toggle-btn { background:none; border:1px solid #333; color:#888; border-radius:4px; padding:6px 12px; font-size:11px; cursor:pointer; letter-spacing:0.1em; text-transform:uppercase; font-family:Georgia,serif; white-space:nowrap; flex-shrink:0; -webkit-appearance:none; }
+.toggle-btn.on { color:#c8a96e; border-color:#c8a96e; }
+.pace-guide { background:#141614; border:1px solid #2a2a2a; border-radius:8px; padding:16px; margin-bottom:20px; display:none; }
+.pace-guide.open { display:block; }
+.pg-label { font-size:11px; letter-spacing:0.2em; color:#666; text-transform:uppercase; margin-bottom:12px; }
+.pace-row { display:flex; align-items:center; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+.pace-bar { width:3px; height:32px; border-radius:2px; flex-shrink:0; }
+.pace-info { flex:1; min-width:130px; }
+.pace-zone { font-size:13px; }
+.pace-feel { font-size:11px; color:#888; margin-top:1px; }
+.pace-val { font-size:14px; color:#e8e0d0; font-family:monospace; flex-shrink:0; }
+.week-card { margin-bottom:8px; border:1px solid #222; border-radius:8px; overflow:hidden; background:#111412; }
+.week-card.open { border-color:var(--wca,#444); }
+.week-card.is-down { background:#141210; }
+.week-card.is-race { background:#131416; }
+.week-btn { width:100%; background:none; border:none; cursor:pointer; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; text-align:left; -webkit-appearance:none; }
+.week-left { display:flex; align-items:center; gap:12px; }
+.week-tag { font-size:11px; font-family:Georgia,serif; letter-spacing:0.1em; min-width:58px; flex-shrink:0; }
+.week-dates { font-size:13px; color:#e8e0d0; }
+.week-right { display:flex; align-items:center; gap:12px; }
+.week-mi { font-size:12px; color:#888; }
+.week-tog { color:#444; font-size:20px; line-height:1; }
+.week-body { padding:0 16px 16px; border-top:1px solid #1e1e1e; display:none; }
+.week-body.open { display:block; }
+.days-list { margin-top:12px; display:flex; flex-direction:column; gap:6px; }
+.day-row { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; background:#0d0f0e; border-radius:6px; border-left:3px solid #555; }
+.day-lbl { font-size:13px; color:#888; min-width:36px; flex-shrink:0; padding-top:1px; }
+.day-info { flex:1; }
+.day-type { font-size:10px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:2px; }
+.day-detail { font-size:13px; color:#c8c0b0; line-height:1.5; }
+.coach-note { margin-top:12px; padding:10px 12px; background:#0a0c0a; border-radius:6px; }
+.cn-label { font-size:10px; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:4px; opacity:0.6; }
+.cn-text { font-size:13px; color:#9a9288; line-height:1.6; }
+.phase-footer { margin-top:20px; padding:16px; border-radius:8px; }
+.fl { font-size:11px; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:10px; }
+.fi { display:flex; gap:8px; margin-bottom:7px; }
+.fi-dash { flex-shrink:0; }
+.fi-text { font-size:13px; color:#9a9288; line-height:1.5; }
+.split-header { margin-bottom:18px; }
+.split-title { font-size:20px; font-weight:400; }
+.split-meta { font-size:13px; color:#888; margin-top:4px; }
+.split-schedule { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.sched-pill { font-size:11px; padding:4px 10px; border-radius:20px; border:1px solid; }
+.split-sched { font-size:12px; margin-top:10px; padding:9px 12px; background:#141614; border-radius:5px; border-left:3px solid #888; color:#b0a890; line-height:1.5; }
+.callout { background:#131210; border:1px solid #2a2218; border-radius:8px; padding:14px 16px; margin-bottom:20px; }
+.callout-title { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#c8904e; margin-bottom:8px; }
+.callout-text { font-size:13px; color:#9a9080; line-height:1.65; }
+.sec-label { font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:#555; margin:20px 0 8px; }
+.superset-badge { font-size:10px; color:#7e9ee8; letter-spacing:0.1em; text-transform:uppercase; margin:16px 0 6px; padding-left:2px; }
+.ex-card { background:#111412; border:1px solid #1e201e; border-radius:8px; margin-bottom:7px; overflow:hidden; }
+.ex-card.mob { background:#101412; border-color:#1a2218; }
+.ex-head { display:flex; align-items:flex-start; gap:10px; padding:12px 14px; cursor:pointer; }
+.ex-num { font-size:11px; color:#444; min-width:18px; padding-top:2px; flex-shrink:0; font-family:monospace; }
+.ex-main { flex:1; }
+.ex-name { font-size:14px; color:#e8e0d0; line-height:1.3; }
+.ex-sets { font-size:12px; color:#777; margin-top:3px; }
+.ex-tag { font-size:9px; letter-spacing:0.12em; text-transform:uppercase; padding:2px 6px; border-radius:3px; margin-left:5px; vertical-align:middle; background:rgba(0,0,0,0.3); }
+.scheme-badge { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; padding:2px 7px; border-radius:3px; margin-left:5px; vertical-align:middle; border:1px solid; }
+.ex-chev { color:#333; font-size:15px; flex-shrink:0; padding-top:3px; transition:transform .2s; }
+.ex-chev.open { transform:rotate(45deg); }
+.ex-body { padding:0 14px 13px 42px; display:none; }
+.ex-body.open { display:block; }
+.ex-cue { font-size:12px; color:#8a8278; line-height:1.65; }
+.ex-why { font-size:11px; color:#686058; margin-top:7px; font-style:italic; line-height:1.5; }
+
+/* RPT tracker */
+.tracker-block { margin-top:12px; background:#0d0f0e; border-radius:8px; padding:12px; }
+.tracker-label { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:10px; }
+.tracker-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.tracker-row:last-child { margin-bottom:0; }
+.tracker-set { font-size:11px; color:#666; min-width:60px; flex-shrink:0; }
+.tracker-input { background:#1a1c1a; border:1px solid #2a2a2a; border-radius:5px; color:#e8e0d0; font-family:Georgia,serif; font-size:13px; padding:6px 8px; width:64px; text-align:center; -webkit-appearance:none; }
+.tracker-input:focus { outline:none; border-color:#555; }
+.tracker-x { font-size:12px; color:#444; }
+.tracker-unit { font-size:11px; color:#555; }
+
+/* Pyramax tracker */
+.pyramax-block { margin-top:12px; background:#0d0f0e; border-radius:8px; padding:12px; }
+.pyramax-label { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:4px; }
+.pyramax-desc { font-size:11px; color:#666; line-height:1.6; margin-bottom:10px; }
+.pyramax-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.pyramax-row:last-child { margin-bottom:0; }
+.pyramax-set { font-size:12px; min-width:80px; flex-shrink:0; }
+.pyramax-input { background:#1a1c1a; border:1px solid #2a2a2a; border-radius:5px; color:#e8e0d0; font-family:Georgia,serif; font-size:13px; padding:6px 8px; width:72px; text-align:center; -webkit-appearance:none; }
+.pyramax-input:focus { outline:none; border-color:#555; }
+.pyramax-unit { font-size:11px; color:#555; }
+
+.mob-day-card { background:#111412; border:1px solid #1e201e; border-radius:8px; margin-bottom:8px; overflow:hidden; }
+.mob-day-head { display:flex; align-items:center; gap:12px; padding:13px 16px; cursor:pointer; }
+.mob-day-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.mob-day-name { font-size:14px; color:#e8e0d0; }
+.mob-day-focus { font-size:11px; color:#777; margin-top:2px; }
+.mob-day-chev { color:#333; font-size:15px; transition:transform .2s; margin-left:auto; }
+.mob-day-chev.open { transform:rotate(45deg); }
+.mob-day-body { padding:0 16px 14px; border-top:1px solid #1e1e1e; display:none; }
+.mob-day-body.open { display:block; }
+.mob-tag { font-size:10px; color:#555; padding:8px 0 10px; letter-spacing:0.12em; text-transform:uppercase; }
+.mob-move { display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid #181818; }
+.mob-move:last-child { border-bottom:none; }
+.mob-time { font-size:12px; color:#c8a96e; min-width:48px; flex-shrink:0; padding-top:1px; font-family:monospace; }
+.mob-info { flex:1; }
+.mob-move-name { font-size:13px; color:#e0d8c8; }
+.mob-move-detail { font-size:12px; color:#888; margin-top:3px; line-height:1.55; }
+.diet-hero { background:#141210; border:1px solid #2a2218; border-radius:8px; padding:16px; margin-bottom:16px; }
+.diet-hero-title { font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#c8a96e; margin-bottom:10px; }
+.diet-stats { display:flex; gap:8px; flex-wrap:wrap; }
+.diet-stat { background:#0d0f0e; border:1px solid #222; border-radius:6px; padding:10px 12px; flex:1; min-width:70px; text-align:center; }
+.diet-stat-val { font-size:19px; color:#c8a96e; font-family:monospace; }
+.diet-stat-lbl { font-size:9px; color:#666; letter-spacing:0.12em; text-transform:uppercase; margin-top:3px; }
+.meal-card { background:#111412; border:1px solid #1e201e; border-radius:8px; margin-bottom:7px; overflow:hidden; }
+.meal-head { display:flex; align-items:center; gap:10px; padding:13px 14px; cursor:pointer; }
+.meal-time { font-size:10px; font-family:monospace; color:#666; min-width:42px; flex-shrink:0; }
+.meal-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.meal-info { flex:1; }
+.meal-name { font-size:14px; color:#e8e0d0; }
+.meal-preview { font-size:11px; color:#666; margin-top:2px; }
+.meal-protein { font-size:12px; font-family:monospace; border:1px solid; border-radius:12px; padding:2px 9px; flex-shrink:0; white-space:nowrap; }
+.meal-protein.none { color:#555; border-color:#333; }
+.meal-chev { color:#333; font-size:15px; flex-shrink:0; transition:transform .2s; }
+.meal-chev.open { transform:rotate(45deg); }
+.meal-body { padding:0 14px 14px; border-top:1px solid #1e1e1e; display:none; }
+.meal-body.open { display:block; }
+.meal-option { margin-top:12px; }
+.meal-opt-label { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:#666; margin-bottom:6px; }
+.meal-opt-detail { font-size:13px; color:#c8c0b0; line-height:1.65; padding:9px 11px; background:#0d0f0e; border-radius:5px; border-left:3px solid #2a2a2a; }
+.meal-run-note { font-size:11px; color:#7eb87e; font-style:italic; margin-top:8px; padding:6px 10px; background:rgba(126,184,126,0.06); border-radius:4px; }
+.protein-summary { background:#111614; border:1px solid #1e2a1e; border-radius:8px; padding:14px 16px; margin-top:18px; }
+.ps-label { font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#555; margin-bottom:12px; }
+.ps-row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px solid #181a18; }
+.ps-row:last-of-type { border-bottom:none; }
+.ps-meal { font-size:13px; color:#9a9288; }
+.ps-p { font-size:13px; font-family:monospace; color:#7eb87e; }
+.ps-total { border-top:1px solid #2a2a2a; padding-top:10px; margin-top:6px; display:flex; justify-content:space-between; }
+.ps-total .ps-meal { font-size:14px; color:#e8e0d0; }
+.ps-total .ps-p { font-size:15px; color:#c8a96e; }
+.diet-tip { background:#101210; border:1px solid #1e261e; border-radius:8px; padding:13px 15px; margin-top:14px; }
+.diet-tip-label { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:#7eb87e; margin-bottom:6px; }
+.diet-tip-text { font-size:12px; color:#7a8a78; line-height:1.65; }
+@media (max-width:400px) {
+  .header { padding:24px 16px 20px; }
+  .main { padding:16px 12px 60px; }
+  .week-btn { padding:12px; }
+  .week-body { padding:0 12px 12px; }
+  .ex-body { padding:0 12px 13px 38px; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-inner">
+    <div class="eyebrow">Pinkston · 2026 Training Plan</div>
+    <h1>Leave Fatigue<br><span>in the Dust.</span></h1>
+    <div class="races">
+      <div class="race-badge"><div class="race-dot" style="background:#e87e7e"></div><span>50-Miler — <strong>Oct 3, 2026</strong></span></div>
+      <div class="race-badge"><div class="race-dot" style="background:#7e9ee8"></div><span>Sub-1:22 Half — <strong>November 2026</strong></span></div>
+    </div>
+  </div>
+</div>
+<div class="mode-nav">
+  <div class="mode-nav-inner">
+    <button class="mode-btn active" style="--mc:#7eb87e" onclick="setMode('run')">Running</button>
+    <button class="mode-btn" style="--mc:#c8784e" onclick="setMode('lift')">Strength</button>
+    <button class="mode-btn" style="--mc:#9e78c8" onclick="setMode('mob')">Mobility</button>
+    <button class="mode-btn" style="--mc:#c8a96e" onclick="setMode('diet')">Diet</button>
+  </div>
+</div>
+<div id="phaseNav" class="phase-nav"><div class="phase-nav-inner" id="phaseNavInner"></div></div>
+<div id="splitNav" class="split-nav" style="display:none"><div class="split-nav-inner" id="splitNavInner"></div></div>
+<div class="main" id="main"></div>
+<script>
+const PHASES=[{id:"base",label:"Phase 1 — Base Build",dates:"May 16 – Jun 13",subtitle:"Tue–Fri: Lift → Run · Thu: Legs + Hike · No weekend runs yet",color:"#c8a96e",alpha:"rgba(200,169,110,0.33)",footer:{label:"Phase 1 Key Rules",bg:"#141210",border:"#2a2520",items:["Lift first, run after — every day except Thursday.","Thursday is legs only + 20–30 min treadmill incline hike. No running.","Post-lift runs are easy. Lifting is already a workout.","Target 20–26 mpw through June 13. Build the engine before the load."]},weeks:[{week:1,dates:"May 18–22",totalMi:"20–22",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 4 mi easy run after · ~9:00/mi"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 5 mi w/ 3×8 min comfortably hard (8:00–8:15) · 2 min jog recovery"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20–30 min treadmill incline hike after · 10–15% grade · 3.0–3.5 mph · no run"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 6–7 mi easy-moderate · 8:30–9:00/mi · your longest day this week"}],notes:"First full week. Keep runs genuinely easy — your legs are pre-fatigued from lifting every day."},{week:2,dates:"May 25–29",totalMi:"22–24",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 4–5 mi easy · strides 4×20 sec at end"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 6 mi w/ 20 min tempo @ ~8:00/mi"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20–30 min treadmill incline hike · 12–15% grade"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 7–8 mi moderate · introduce trail if available"}],notes:"Wednesday tempo: not all-out. Conversational sentence possible with effort."},{week:3,dates:"Jun 1–5",totalMi:"24–26",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy · conversational pace"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 6 mi w/ 4×1 mile @ 7:40–7:50 · 90 sec jog recovery"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20–30 min treadmill incline hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 8–9 mi easy-moderate on trail if possible"}],notes:"Mile repeats Wednesday: first real peek at fitness. Push here."},{week:4,dates:"Jun 8–12",totalMi:"18–20 (DOWN WEEK)",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 4 mi easy · honest recovery"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 5 mi w/ 2×10 min moderate · no heroics"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20 min easy incline hike · down week"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 5–6 mi easy"}],notes:"DOWN WEEK. Absorb the training. You're about to add weekend volume — arrive fresh."}]},{id:"ultra",label:"Phase 2 — Ultra Build",dates:"Jun 14 – Aug 15",subtitle:"Tue–Fri: Lift → Run · Thu: Legs + Hike · Sat/Sun: Long runs added",color:"#7eb87e",alpha:"rgba(126,184,126,0.33)",footer:{label:"Ultra Training Non-Negotiables",bg:"#111612",border:"#1e2a1e",items:["Back-to-back weekend runs are the single most important ultra training tool.","Lift first on Tue/Wed/Fri. Thursday is legs + hike only.","Eat on all runs over 90 min. 60–90 cal every 30–40 min. Practice race nutrition.","Hike uphills in training. It's strategy, not weakness.","Drop a lift if life happens — the run always wins in Phase 2."]},weeks:[{week:5,dates:"Jun 14–20",totalMi:"32–36",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 6 mi w/ 3×10 min tempo"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20–30 min treadmill incline hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 5 mi easy · pre-weekend flush"},{day:"Sat",type:"Long Run",detail:"14–15 mi easy · 9:30–10:30/mi · first real long day"},{day:"Sun",type:"Back-to-Back",detail:"8 mi easy-moderate · running tired = ultra training"}],notes:"Weekend back-to-backs start now. Saturday is your big day. Sunday teaches your body to run fatigued."},{week:6,dates:"Jun 21–27",totalMi:"34–38",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 7 mi w/ 4×1 mi @ 7:40–7:50"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20–30 min treadmill incline hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 5 mi easy"},{day:"Sat",type:"Long Run",detail:"16–17 mi easy · hills · eat every 45 min"},{day:"Sun",type:"Back-to-Back",detail:"9 mi easy"}],notes:"Start dialing in race nutrition on Saturday longs. Non-negotiable for 50-milers."},{week:7,dates:"Jun 28–Jul 4",totalMi:"36–40",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 7 mi w/ 25 min tempo + 6×30 sec surges"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 25–30 min treadmill incline hike · push the grade"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 5 mi easy"},{day:"Sat",type:"Long Run",detail:"18–20 mi easy · trail · hike uphills aggressively"},{day:"Sun",type:"Back-to-Back",detail:"10 mi easy · eat on the run"}],notes:"Hike every uphill in training. Ultrarunning is run/hike. Practice it now."},{week:8,dates:"Jul 5–11",totalMi:"26–28 (DOWN WEEK)",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 4 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 5 mi w/ 2×10 min moderate"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20 min easy hike · down week"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 4 mi easy"},{day:"Sat",type:"Moderate Long",detail:"12 mi easy · no back-to-back"},{day:"Sun",type:"Rest/Walk",detail:"Rest or 30 min easy walk"}],notes:"DOWN WEEK. Fitness comes from recovering from hard weeks, not just doing them."},{week:9,dates:"Jul 12–18",totalMi:"40–44",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 8 mi w/ 5×1 mi @ 7:35–7:45"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 30 min treadmill incline hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 5 mi easy"},{day:"Sat",type:"Long Run",detail:"20–22 mi · biggest run yet · cap at 4 hrs"},{day:"Sun",type:"Back-to-Back",detail:"10–12 mi easy"}],notes:"22-miler is a big checkpoint. Don't race it. Nutrition every 30–40 min."},{week:10,dates:"Jul 19–25",totalMi:"42–46",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 8 mi w/ 30 min tempo"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 30 min treadmill incline hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 5 mi easy"},{day:"Sat",type:"Long Run",detail:"22–24 mi easy · peak long run distance"},{day:"Sun",type:"Back-to-Back",detail:"12 mi easy"}],notes:"Peak back-to-back weekend. 35–36 mi total over two days. 50-miler confidence is built here."},{week:11,dates:"Jul 26–Aug 1",totalMi:"28–30 (DOWN WEEK)",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 4 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 5 mi w/ 2×10 min moderate"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20 min easy hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 4 mi easy"},{day:"Sat",type:"Moderate Long",detail:"13 mi easy"},{day:"Sun",type:"Rest",detail:"Rest or 3–4 mi shakeout"}],notes:"3rd down week. Biggest month is behind you. Absorb it."},{week:12,dates:"Aug 2–8",totalMi:"42–46",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 8 mi w/ 4×2 mi @ marathon effort"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 30 min treadmill incline hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 5 mi easy"},{day:"Sat",type:"Long Run",detail:"22–24 mi on trail · race gear + nutrition dress rehearsal"},{day:"Sun",type:"Back-to-Back",detail:"12 mi easy"}],notes:"Dress rehearsal. Use your actual race vest, shoes, and food. Nothing new on race day."},{week:13,dates:"Aug 9–15",totalMi:"38–42",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 7 mi w/ 5×1 mi @ 7:40"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 25 min treadmill incline hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 5 mi easy"},{day:"Sat",type:"Long Run",detail:"20 mi · begin pulling back"},{day:"Sun",type:"Back-to-Back",detail:"10 mi easy"}],notes:"Volume starts dropping. Fitness is banked. Trust the taper."}]},{id:"taper",label:"Phase 3 — 50M Taper",dates:"Aug 16 – Oct 3",subtitle:"Sharpen · protect fitness · arrive fresh",color:"#e87e7e",alpha:"rgba(232,126,126,0.33)",footer:null,weeks:[{week:14,dates:"Aug 16–22",totalMi:"32–36",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 7 mi w/ 4×1 mi @ 7:40"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20 min hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 5 mi easy"},{day:"Sat",type:"Long Run",detail:"16 mi easy"},{day:"Sun",type:"Back-to-Back",detail:"8 mi easy"}],notes:"Still meaningful volume, descending. No new stress."},{week:15,dates:"Aug 23–29",totalMi:"26–30",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 6 mi w/ 3×1 mi @ 7:40"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20 min easy hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 4 mi easy"},{day:"Sat",type:"Long Run",detail:"13–14 mi easy"},{day:"Sun",type:"Back-to-Back",detail:"6–7 mi easy"}],notes:"Legs should start feeling springy. That's the taper working — don't add miles to test it."},{week:16,dates:"Aug 30–Sep 5",totalMi:"22–26",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 4 mi easy w/ 4 strides"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 5 mi w/ 2×1 mi @ race effort"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 15–20 min easy hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 4 mi easy"},{day:"Sat",type:"Moderate Long",detail:"10–12 mi easy on trail · final longer run"},{day:"Sun",type:"Easy",detail:"5 mi easy"}],notes:"4 weeks out. Last meaningful long run in the books."},{week:17,dates:"Sep 6–12",totalMi:"18–22",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 4 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 5 mi w/ 4×5 min comfortably hard"},{day:"Thu",type:"Legs (light) + Hike",detail:"Light leg session · 15 min easy hike only"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 3–4 mi easy"},{day:"Sat",type:"Moderate",detail:"8–10 mi easy"},{day:"Sun",type:"Easy",detail:"4 mi easy"}],notes:"3 weeks out. Visualize, finalize nutrition plan, confirm gear."},{week:18,dates:"Sep 13–19",totalMi:"14–18",days:[{day:"Tue",type:"Push → Run",detail:"Lift light · 3–4 mi easy w/ strides"},{day:"Wed",type:"Pull → Run",detail:"Lift light · 4 mi w/ 3×1 mi @ goal effort"},{day:"Thu",type:"Legs (light)",detail:"Very light leg session only · no hike"},{day:"Fri",type:"Arms → Run",detail:"Lift light · 3 mi easy"},{day:"Sat",type:"Moderate",detail:"6–8 mi easy · course preview if possible"},{day:"Sun",type:"Rest/Walk",detail:"Rest or 20–30 min walk"}],notes:"2 weeks out. Rest is training now. Sleep, eat, hydrate."},{week:19,dates:"Sep 20–26",totalMi:"10–12",days:[{day:"Tue",type:"Easy Run",detail:"3 mi easy w/ 4 strides · no lifting"},{day:"Wed",type:"Shakeout",detail:"3 mi easy · 2×30 sec fast · done"},{day:"Thu",type:"Rest",detail:"Full rest · no lifting · no hike"},{day:"Fri",type:"Easy Run",detail:"2–3 mi easy"},{day:"Sat",type:"Rest",detail:"Full rest · pack drop bags"},{day:"Sun",type:"Rest",detail:"Full rest · eat well · sleep aggressively"}],notes:"You cannot gain fitness this week. You can only lose it by overdoing it. No lifting this week."},{week:20,dates:"Sep 27–Oct 3",totalMi:"RACE WEEK",days:[{day:"Mon",type:"Easy Walk",detail:"20 min walk only"},{day:"Tue",type:"Shakeout",detail:"2 mi easy w/ 2 strides"},{day:"Wed",type:"Rest",detail:"Full rest"},{day:"Thu",type:"Rest",detail:"Full rest · travel if needed"},{day:"Fri",type:"Course Preview",detail:"1–2 mi easy at start line · sleep early"},{day:"Sat Oct 3",type:"🏆 RACE DAY",detail:"Start conservative · hike all climbs · eat on schedule · trust the training"}],notes:"Go out embarrassingly easy. You will pass people in miles 30–40 who didn't. Eat before hungry. Drink before thirsty."}]},{id:"half",label:"Phase 4 — Half Marathon",dates:"Oct 4 – November",subtitle:"Sub-1:22 · ~6:17/mi · full speed pivot",color:"#7e9ee8",alpha:"rgba(126,158,232,0.33)",footer:{label:"Sub-1:22 Math",bg:"#111218",border:"#1e1e2a",items:["Goal: 1:21:59 = 6:17/mi average for 13.1 miles.","Post-50-miler aerobic base makes speed come back fast. Expect big gains in 6–8 weeks.","Key session: 6×1 mi @ 6:20 with 90 sec jog. When this feels controlled, you're ready.","Resume lifting Tue/Wed/Fri after recovery week. Legs 1× per week."]},weeks:[{week:21,dates:"Oct 4–10",totalMi:"20–22 (RECOVERY)",days:[{day:"Tue",type:"Easy Jog",detail:"3–4 mi very easy · no lifting this week"},{day:"Wed",type:"Easy",detail:"4 mi easy"},{day:"Thu",type:"Rest",detail:"Full rest · legs need it"},{day:"Fri",type:"Easy",detail:"4 mi easy"},{day:"Sat",type:"Easy Long",detail:"8–10 mi easy · no pressure"},{day:"Sun",type:"Rest",detail:"Rest or walk"}],notes:"POST-RACE RECOVERY. No lifting this week. Your aerobic base is enormous. Let your body celebrate."},{week:22,dates:"Oct 11–17",totalMi:"28–32",days:[{day:"Tue",type:"Push → Run",detail:"Lift returns · 5 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 6 mi w/ 4×1 mi @ 7:10–7:20"},{day:"Thu",type:"Legs + Hike",detail:"Legs return · 20 min easy hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 5 mi easy"},{day:"Sat",type:"Long Run",detail:"12–13 mi easy"},{day:"Sun",type:"Easy",detail:"4–5 mi easy"}],notes:"Speed comes back fast after ultra base. Don't be surprised when it does."},{week:23,dates:"Oct 18–24",totalMi:"32–36",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy w/ strides"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 8 mi w/ 5×1 mi @ 6:50–7:00"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20 min hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 5 mi easy"},{day:"Sat",type:"Long Tempo",detail:"10 mi w/ miles 4–8 @ 6:30–6:45"},{day:"Sun",type:"Easy",detail:"5 mi easy"}],notes:"Sub-1:22 = 6:17/mi. You need 6:15–6:20 feeling controlled. These workouts build that."},{week:24,dates:"Oct 25–31",totalMi:"34–38",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 9 mi w/ 6×1 mi @ 6:15–6:25"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20 min hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 5 mi easy"},{day:"Sat",type:"Long Run",detail:"13–14 mi easy · strong finish last 3 @ 7:15"},{day:"Sun",type:"Easy",detail:"4–5 mi easy"}],notes:"6×1 mi @ 6:20 is the confidence builder. Nail this and sub-1:22 is in reach."},{week:25,dates:"Nov 1–7",totalMi:"30–34",days:[{day:"Tue",type:"Push → Run",detail:"Lift first · 5 mi easy"},{day:"Wed",type:"Pull → Run",detail:"Lift first · 7 mi w/ 3×2 mi @ 6:20–6:25"},{day:"Thu",type:"Legs + Hike",detail:"Legs only · 20 min hike"},{day:"Fri",type:"Arms → Run",detail:"Lift first · 4 mi easy"},{day:"Sat",type:"Moderate Long",detail:"11–12 mi w/ middle 6 @ 6:45–7:00"},{day:"Sun",type:"Easy",detail:"4 mi easy"}],notes:"2–3 weeks out. Sharpening. Volume drops, quality stays."},{week:26,dates:"Nov 8–14",totalMi:"22–26 (TAPER)",days:[{day:"Tue",type:"Push → Run",detail:"Lift light · 4 mi easy w/ strides"},{day:"Wed",type:"Pull → Run",detail:"Lift light · 5 mi w/ 2×1 mi @ 6:15 + 4×30 sec fast"},{day:"Thu",type:"Legs (light)",detail:"Very light legs · no hike"},{day:"Fri",type:"Arms → Run",detail:"Lift light · 3–4 mi easy"},{day:"Sat",type:"Moderate",detail:"8 mi easy w/ 2 mi @ race pace"},{day:"Sun",type:"Rest",detail:"Rest"}],notes:"Final taper. You're sharp. Trust it. Run less, sleep more."}]}];
+
+const PACE_GUIDE=[{zone:"Easy / Recovery",pace:"9:00–10:00/mi",feel:"Conversational. Nose breathing possible.",color:"#7eb87e"},{zone:"Moderate / Aerobic",pace:"8:20–8:45/mi",feel:"Can talk in short sentences.",color:"#c8a96e"},{zone:"Tempo / Threshold",pace:"7:45–8:10/mi",feel:"Comfortably hard. 20–40 min max.",color:"#e8a05e"},{zone:"Half Marathon Pace",pace:"6:15–6:20/mi",feel:"Hard but controlled. Race day only.",color:"#7e9ee8"},{zone:"Mile Repeats",pace:"6:50–7:20/mi",feel:"Fast but repeatable. 1–2 min recovery.",color:"#b87eb8"}];
+const TYPE_COLORS={"Push → Run":"#c8784e","Pull → Run":"#7e9ee8","Arms → Run":"#b87eb8","Legs + Hike":"#7eb87e","Legs (light) + Hike":"#9ec87e","Legs (light)":"#9ec87e","Easy":"#7eb87e","Easy Jog":"#7eb87e","Easy Run":"#7eb87e","Easy-Moderate":"#9ec89e","Workout":"#e8903e","Light Workout":"#e8b06e","Short Workout":"#e8a05e","Medium Long":"#c8a96e","Moderate Long":"#c8a96e","Long Run":"#e87e7e","Back-to-Back":"#b87eb8","Moderate":"#9eb8c8","Long Tempo":"#d87e4e","Sharpener":"#d8904e","Shakeout":"#9eb87e","Course Preview":"#8eb8c8","Easy Walk":"#888","Rest/Walk":"#888","Rest":"#888","🏆 RACE DAY":"#f0c030"};
+
+// Strength splits
+// scheme: 'straight' | 'rpt' | 'pyramax'
+const SPLITS=[
+  { id:"push", label:"Push", fullLabel:"Tuesday — Push · Chest, Shoulders, Triceps", color:"#c8784e",
+    schedule:"Lift → then run",
+    sched:"Bench first while you're completely fresh. Shoulder press second. Keep rest to 2–3 min on compounds.",
+    sections:[
+      { label:"Chest & Shoulders", exercises:[
+        { n:"Flat Barbell Bench Press", sets:"Pyramax", tag:"Chest", tc:"#b87878", scheme:"pyramax", key:"push_bench",
+          cue:"Feet flat, upper back arched slightly. Bar touches lower chest. 2-sec descent. Control the weight — don't bounce off the chest.",
+          why:"Your primary chest mass builder. Pyramax auto-finds your true working max on any given day — great for a body that's also running 4 days a week." },
+        { n:"Seated DB Overhead Press", sets:"3 × 8–10", tag:"Shoulders", tc:"#c8784e", scheme:"straight",
+          cue:"Neutral or pronated grip. Press slightly in front of head. 3-sec descent. Stop just short of lockout.",
+          why:"Primary shoulder size. Straight sets — simple, trackable. Add weight when you hit 3×10 cleanly." },
+        { n:"Incline DB Press", sets:"RPT · 3 sets", tag:"Upper Chest", tc:"#b87878", scheme:"rpt", key:"push_incline",
+          cue:"30–45° incline. Elbows at 45°, not flared. Touch lightly at bottom, drive up and in. Rest 2–3 min between sets.",
+          why:"Upper chest fullness. RPT lets you go heaviest while still fresh from bench." },
+        { n:"DB / Cable Lateral Raises", sets:"3 × 15–20", tag:"Delt Width", tc:"#c8a04e", scheme:"straight",
+          cue:"Lead with elbows. Stop at shoulder height. Slight forward lean. Slow eccentric — 3 sec down.",
+          why:"Medial delt width. High reps, slow tempo — this is the look builder." },
+        { n:"Tricep Pushdowns (optional finisher)", sets:"2–3 × 12–15", tag:"Triceps", tc:"#9e78c8", scheme:"straight",
+          cue:"Elbows pinned to sides. Push down, flare hands at bottom for lateral head. Squeeze hard.",
+          why:"Quick finisher if time allows. Skip on heavy running days — it's optional." },
+      ]},
+    ]
+  },
+  { id:"pull", label:"Pull", fullLabel:"Wednesday — Pull · Back, Rear Delts, Biceps", color:"#7e9ee8",
+    schedule:"Lift → then run",
+    sched:"RDL goes first — it's your heaviest movement and needs full focus. Keep rows slow and deliberate.",
+    sections:[
+      { label:"Back & Posterior Chain", exercises:[
+        { n:"Romanian Deadlift", sets:"3 × 6–8", tag:"Hamstring + Glute", tc:"#7e9ee8", scheme:"straight",
+          cue:"Hip hinge — not a squat. Back flat, soft knee bend. Feel hamstring load at bottom. Drive through heels. Don't round at the bottom.",
+          why:"Serious posterior chain builder and direct ultra-running carryover. Strong hamstrings and glutes offload the knees across 50 miles." },
+        { n:"Pull-Ups (weighted or lat pulldown)", sets:"3 × 6–10", tag:"Lats", tc:"#7e9ee8", scheme:"straight",
+          cue:"Dead hang start. Drive elbows to hips — don't think about pulling with hands. Chin clears bar. Add weight when 10 feels easy.",
+          why:"Lat width. The V-taper look. Non-negotiable vertical pulling movement." },
+        { n:"Single-Arm DB Row", sets:"Pyramax", tag:"Mid-Back", tc:"#7eb8c8", scheme:"pyramax", key:"pull_row",
+          cue:"Brace on bench. Row to hip, not armpit. Elbow drives straight back. Pause 1 sec at top. Full stretch at bottom.",
+          why:"Dense mid-back thickness. Pyramax finds your true daily max — great unilateral strength builder." },
+        { n:"Face Pulls (cable rope)", sets:"3 × 15–20", tag:"Shoulder Health", tc:"#7eb87e", scheme:"straight",
+          cue:"Pull to forehead, hands finish beside ears with full external rotation. Elbows high throughout. Light weight — the rotation is the point.",
+          why:"Non-negotiable. Six months of heavy pressing without this leads to shoulder impingement. Do it every single week." },
+      ]},
+    ]
+  },
+  { id:"legs", label:"Legs", fullLabel:"Thursday — Legs · Bulletproof Ultra Focus", color:"#7eb87e",
+    schedule:"Legs only → 20–30 min treadmill incline hike after",
+    sched:"No running after legs. Ever. Treadmill hike at 10–15% grade, 3.0–3.5 mph, 20–30 min. This is ultra-specific training — not cardio filler.",
+    callout:{ title:"Two Goals · One Session", text:"Goal 1 — Strength and size: Front Squat and Bulgarian Split Squat are your primary movers. These build the quads, glutes, and posterior chain that make you powerful. Goal 2 — Ultra durability: every other exercise protects your knees and ankles across 50 miles. Front squat trains ankle dorsiflexion under load as a direct side effect. BSS is the exercise you've already proven works for you. VMO step-downs between front squat sets — no extra time cost." },
+    sections:[
+      { label:"Strength — Primary", exercises:[
+        { n:"Front Squat + VMO Step-Downs between sets", sets:"3–4 × 6–12", tag:"Quad + Strength", tc:"#c8a96e", scheme:"straight",
+          cue:"Bar in clean grip or cross-arm. Elbows high — if they drop, the bar drops. Sit straight down, full depth, knees track over toes. Between each squat set: 8–10 slow step-down eccentrics each leg (4-sec descent, just touch floor, drive back up). Rest 3–4 min total between squat sets.",
+          why:"Front squat is your primary strength builder and trains ankle dorsiflexion simultaneously. Step-downs between sets build the eccentric quad strength that stops your knees from buckling at mile 35 — no extra time added." },
+        { n:"Bulgarian Split Squat", sets:"3–4 × 8–12 each leg", tag:"VMO + Glute", tc:"#c8a96e", scheme:"straight",
+          cue:"Rear foot on bench, front foot forward. 3-sec descent. Knee stays over toes at bottom. Drive through front heel. Rest 2–3 min.",
+          why:"The exercise you've already proven works. Unilateral load builds VMO and glute simultaneously, reveals imbalances, and is the single best ultra-running strength movement." },
+      ]},
+      { label:"Single-Leg & Ankle", exercises:[
+        { n:"Single-Leg Romanian Deadlift", sets:"3 × 8–10 each leg", tag:"Glute + Hamstring", tc:"#e8903e", scheme:"straight",
+          cue:"One leg, slight knee bend, hinge at hips with flat back. Feel the hamstring load. Drive through heel to stand. Use a DB in the opposite hand.",
+          why:"Hip hinge on one leg mirrors every running stride. Strong glutes offload the knee across 50 miles." },
+        { n:"Standing Calf Raises + Tibialis Raises superset", sets:"3 × 15–20 each", tag:"Ankle Strength", tc:"#7eb87e", scheme:"straight",
+          cue:"Calf raises: full range, 3-sec descent, pause at top. Tibialis raises: lean back against wall, lift toes toward shins as high as possible. Superset back-to-back with no rest between.",
+          why:"Calf-ankle complex for trail durability. Tibialis anterior is the most neglected muscle in runners — it's what controls your foot strike on technical downhills and protects the ankle from rolling." },
+      ]},
+      { label:"Post-Lift", exercises:[
+        { n:"Treadmill Incline Hike", sets:"20–30 min", tag:"Ultra Training", tc:"#7eb87e", scheme:"straight",
+          cue:"10–15% grade · 3.0–3.5 mph · no holding the rails · drive through the heel on each step · use it as your cooldown and your uphill training simultaneously.",
+          why:"Trains the exact muscle pattern you'll use hiking climbs in the race. Low impact, high specificity. This is ultra training disguised as a cooldown." },
+      ]},
+    ]
+  },
+  { id:"arms", label:"Arms", fullLabel:"Friday — Arms & Show · Biceps, Triceps", color:"#b87eb8",
+    schedule:"Lift → then run",
+    sched:"This is your fun day. Go in, get a pump, run after. No heavy compounds. Pure isolation.",
+    sections:[
+      { label:"Biceps", exercises:[
+        { n:"Incline DB Curl", sets:"3 × 10–12", tag:"Bicep Peak", tc:"#b87eb8", scheme:"straight",
+          cue:"45–60° incline, arms hang fully behind torso. Curl without letting shoulder come forward. Full stretch at bottom. Slow 3-sec descent.",
+          why:"Hits the long head in a stretched position no standing curl can reach. Builds the peak." },
+        { n:"Hammer Curl", sets:"3 × 12–15", tag:"Thickness", tc:"#b87eb8", scheme:"straight",
+          cue:"Neutral grip, thumbs up. Curl straight, don't rotate at top. Alternating or together.",
+          why:"Brachialis thickness under the bicep makes the arm look bigger from every angle. Also builds grip for trail poles." },
+        { n:"Cable Curl (finisher)", sets:"2 × 15", tag:"Pump", tc:"#9e78c8", scheme:"straight",
+          cue:"Full squeeze at top, slow return. Hold peak 1 sec. Don't go heavy — this is blood flow.",
+          why:"Pump finisher. Carries over to size over time." },
+      ]},
+      { label:"Triceps", exercises:[
+        { n:"Weighted Dips", sets:"RPT · 3 sets", tag:"Triceps", tc:"#9e78c8", scheme:"rpt", key:"arms_dips",
+          cue:"Stay upright for max tricep focus. Full depth — upper arm parallel to floor. Add weight via belt or hold a DB between knees. Rest 2–3 min.",
+          why:"Most mass-building tricep exercise. RPT makes sense here — compound movement, room to load heavy." },
+        { n:"Cable Pushdown (rope)", sets:"3 × 12–15", tag:"Lateral Head", tc:"#9e78c8", scheme:"straight",
+          cue:"Elbows pinned to sides. Push down and flare hands outward at bottom — that flare hits the lateral head. Squeeze hard.",
+          why:"Horseshoe shape from the side. Quick and effective finisher." },
+      ]},
+    ]
+  }
+];
+
+const MOB_DAYS=[{day:"Tuesday",focus:"Shoulders + Upper Body",color:"#c8784e",context:"Push day · do before lifting",moves:[{time:"1:00",name:"Thread the Needle",detail:"On all fours. Reach one arm under your body and rotate — hold end range 5 sec. 5 reps each side."},{time:"0:45",name:"Doorway Chest Stretch",detail:"Forearm on door frame at 90°. Step through until you feel the pec. 45 sec each side."},{time:"1:00",name:"Band Shoulder Dislocates",detail:"Wide grip, pass overhead and behind slowly. 10 reps. Opens shoulder range before pressing."},{time:"1:00",name:"Cross-Body + Overhead Tricep Stretch",detail:"Pull arm across chest 30 sec, then palm on back elbow up 30 sec. Each side."},{time:"1:15",name:"Neck & Upper Trap Release",detail:"Ear to shoulder 30 sec each side. Then 10 slow chin tucks."}]},{day:"Wednesday",focus:"Hips + Hip Flexors",color:"#7eb87e",context:"Pull day · before or after lifting",moves:[{time:"1:15",name:"Half-Kneeling Hip Flexor Stretch",detail:"Back knee padded. Squeeze back glute hard. Hold 45 sec each side. The glute squeeze is what opens the flexor."},{time:"1:00",name:"90/90 Hip Switch",detail:"Both knees at 90°. 8 slow transitions. Hold end range 20 sec each side. Sit tall."},{time:"1:00",name:"Pigeon Pose or Figure-4 Hip Stretch",detail:"45 sec each side. Tight external rotators drive knee pain — this addresses them."},{time:"0:45",name:"Lying Hip Internal Rotation",detail:"On back, knees bent, feet apart. Drop both knees inward — hold 30 sec."},{time:"1:00",name:"Standing Hip CARs",detail:"On one foot. Draw largest possible circle with lifted knee. 5 slow circles each direction."}]},{day:"Thursday",focus:"Ankles + Calves",color:"#c8a96e",context:"Leg day · do BEFORE your leg workout",moves:[{time:"1:15",name:"Wall Ankle Dorsiflexion Stretch",detail:"Knee-to-wall, toes 2–4 inches away. Drive knee over pinky toe without heel rising. 3 sets × 45 sec each side."},{time:"0:45",name:"Ankle CARs",detail:"Full circles both directions — 8 each. Slow. Find the sticky spots."},{time:"1:00",name:"Banded Ankle Distraction",detail:"Band around ankle at joint level. Step forward to create traction. Move through full range — 10 reps each direction."},{time:"0:45",name:"Calf Doorway Stretch",detail:"Straight leg targets gastroc. Slightly bent knee targets soleus. 30 sec each position, each leg."},{time:"1:15",name:"Single-Leg Heel Drops (unloaded)",detail:"On a step edge. Lower heel slowly 4 sec below step level. 10 reps each side."}]},{day:"Friday",focus:"Hamstrings + Posterior Chain",color:"#7e9ee8",context:"Arms day · do after running as cooldown",moves:[{time:"1:00",name:"Standing Hamstring Sweep",detail:"One foot on low surface. Hinge at hips flat back. 5 slow reaches, hold 10 sec at end range. Each side."},{time:"1:00",name:"Supine Hamstring Stretch",detail:"On back, pull one leg straight toward you — hand behind thigh. Hold 45 sec each side."},{time:"1:00",name:"World's Greatest Stretch",detail:"From a lunge: front hand inside front foot, rotate elbow to floor, then reach to ceiling. 5 reps each side."},{time:"0:45",name:"Standing Quad + Hip Flexor Combo",detail:"Pull foot to glute, then tilt pelvis under. 30 sec each side."},{time:"1:15",name:"Downward Dog with Calf Pedal",detail:"Alternate pressing each heel toward floor — 30 slow pedals. Hold 5 sec at end range each side."}]}];
+
+const DIET={target:{weight:"185 lb",protein:"215–265g",approach:"Robotic · High Protein · Sustainable"},meals:[{time:"AM",name:"Breakfast at Work",dot:"#f0c030",preview:"4 eggs + sausage + shake OR overnight oats",protein:"50–80g",proteinColor:"#c8a96e",options:[{label:"Option A",detail:"4 eggs + 2 sausage links + 1 banana + protein shake (30–40g protein shake)"},{label:"Option B",detail:"Overnight oats with protein powder mixed in — prep the night before"}],runNote:"On big run days: add an extra shake or a second banana for carb support."},{time:"10 AM",name:"Snack 1",dot:"#7eb87e",preview:"1 tuna packet",protein:"25–35g",proteinColor:"#7eb87e",options:[{label:"What to have",detail:"1 tuna packet (flavored or plain). No prep. High protein, zero effort."}],runNote:null},{time:"12 PM",name:"Robotic Lunch",dot:"#7e9ee8",preview:"7–8oz chicken + ¾ cup rice + veg",protein:"50–60g",proteinColor:"#7e9ee8",options:[{label:"Option A",detail:"7–8oz grilled chicken + ¾ cup cooked rice + broccoli or any green veg"},{label:"Option B",detail:"Ground meat (beef/turkey) + carrots and peas + potato on big run days"}],runNote:"Add a potato or extra rice on Saturday long run days and the day before."},{time:"2 PM",name:"Snack 2",dot:"#9e9e9e",preview:"1 apple",protein:null,proteinColor:null,options:[{label:"What to have",detail:"1 apple. Keeps hunger at bay without a protein hit."}],runNote:null},{time:"After Work",name:"After-Work Meal",dot:"#e87e7e",preview:"Big chicken salad container",protein:"50–60g",proteinColor:"#e87e7e",options:[{label:"What to have",detail:"6–8oz chicken breast + a full bagged salad. Pre-make chicken in bulk."}],runNote:"After long run days, swap salad for rice or add one — your body needs the carbs."},{time:"Evening",name:"Dinner",dot:"#b87eb8",preview:"One controlled plate — meat + carb + veg",protein:"40–55g",proteinColor:"#b87eb8",options:[{label:"What to have",detail:"One plate: protein (any meat, 6–8oz), a carb (rice, potato, pasta), and a vegetable. Whatever the family is eating — just keep it one plate."}],runNote:null}],summary:[{meal:"Breakfast",p:"50–80g"},{meal:"Snack 1 (Tuna)",p:"25–35g"},{meal:"Lunch",p:"50–60g"},{meal:"Snack 2 (Apple)",p:"—"},{meal:"After-Work Meal",p:"50–60g"},{meal:"Dinner",p:"40–55g"}],totalLow:"215g",totalHigh:"290g",tip:"Batch lunches once or twice a week — cook a big batch of chicken and rice on Sunday and Wednesday. Stay consistent and the weight will drop. The plan is designed to be robotic: the less you have to decide, the more you'll stick to it."};
+
+let mode='run',activePhase=0,openWeek=null,paceOpen=false,activeSplit=0,openEx=null,openMobDay=null,openMeal=null;
+
+function lsGet(k){try{return localStorage.getItem(k)||'';}catch(e){return '';}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+
+function render(){
+  document.getElementById('phaseNav').style.display=mode==='run'?'block':'none';
+  document.getElementById('splitNav').style.display=mode==='lift'?'block':'none';
+  document.querySelectorAll('.mode-btn').forEach((b,i)=>b.classList.toggle('active',['run','lift','mob','diet'][i]===mode));
+  if(mode==='run'){buildPhaseNav();buildRunMain();}
+  else if(mode==='lift'){buildSplitNav();buildLiftMain();}
+  else if(mode==='mob'){buildMobMain();}
+  else buildDietMain();
+}
+function setMode(m){mode=m;openWeek=null;openEx=null;openMobDay=null;openMeal=null;render();window.scrollTo({top:0,behavior:'smooth'});}
+
+function buildPhaseNav(){
+  document.getElementById('phaseNavInner').innerHTML=PHASES.map((p,i)=>`<button class="phase-btn${i===activePhase?' active':''}" style="--pc:${p.color}" onclick="setPhase(${i})">${p.label.split(' — ')[0]}</button>`).join('');
+}
+function setPhase(i){activePhase=i;openWeek=null;buildPhaseNav();buildRunMain();window.scrollTo({top:0,behavior:'smooth'});}
+
+function buildRunMain(){
+  const ph=PHASES[activePhase];
+  const pRows=PACE_GUIDE.map(z=>`<div class="pace-row"><div class="pace-bar" style="background:${z.color}"></div><div class="pace-info"><div class="pace-zone" style="color:${z.color}">${z.zone}</div><div class="pace-feel">${z.feel}</div></div><div class="pace-val">${z.pace}</div></div>`).join('');
+  const wCards=ph.weeks.map((w,wi)=>{
+    const isDown=String(w.totalMi).includes('DOWN'),isRace=w.totalMi==='RACE WEEK',isOpen=openWeek===wi;
+    const tag=isRace?'🏁 RACE':isDown?'↓ DOWN':`Wk ${w.week}`;
+    const tc=isRace?'#f0c030':isDown?'#e8904e':ph.color;
+    const dRows=w.days.map(d=>{const c=TYPE_COLORS[d.type]||'#888';return`<div class="day-row" style="border-left-color:${c}"><div class="day-lbl">${d.day}</div><div class="day-info"><div class="day-type" style="color:${c}">${d.type}</div><div class="day-detail">${d.detail}</div></div></div>`;}).join('');
+    const note=w.notes?`<div class="coach-note" style="border-left-color:${ph.color}55"><div class="cn-label" style="color:${ph.color}">Coach's Note</div><div class="cn-text">${w.notes}</div></div>`:'';
+    return`<div class="week-card${isOpen?' open':''}${isDown?' is-down':''}${isRace?' is-race':''}" style="--wca:${ph.alpha}"><button class="week-btn" onclick="toggleWeek(${wi})"><div class="week-left"><div class="week-tag" style="color:${tc}">${tag}</div><div class="week-dates">${w.dates}</div></div><div class="week-right"><div class="week-mi">${isRace?'Race day':'~'+w.totalMi+' mi'}</div><div class="week-tog">${isOpen?'−':'+'}</div></div></button><div class="week-body${isOpen?' open':''}"><div class="days-list">${dRows}</div>${note}</div></div>`;
+  }).join('');
+  let footer='';
+  if(ph.footer){footer=`<div class="phase-footer" style="background:${ph.footer.bg};border:1px solid ${ph.footer.border}"><div class="fl" style="color:${ph.color}">${ph.footer.label}</div>${ph.footer.items.map(n=>`<div class="fi"><span class="fi-dash" style="color:${ph.color}">—</span><span class="fi-text">${n}</span></div>`).join('')}</div>`;}
+  document.getElementById('main').innerHTML=`<div class="phase-header"><div><div class="phase-title" style="color:${ph.color}">${ph.label}</div><div class="phase-sub">${ph.dates} · ${ph.subtitle}</div></div><button class="toggle-btn${paceOpen?' on':''}" onclick="togglePace()">${paceOpen?'Hide':'Pace'} Guide</button></div><div class="pace-guide${paceOpen?' open':''}"><div class="pg-label">Pace Zones</div>${pRows}</div>${wCards}${footer}`;
+}
+function toggleWeek(wi){openWeek=openWeek===wi?null:wi;buildRunMain();}
+function togglePace(){paceOpen=!paceOpen;buildRunMain();}
+
+function buildSplitNav(){
+  document.getElementById('splitNavInner').innerHTML=SPLITS.map((s,i)=>`<button class="split-btn${i===activeSplit?' active':''}" style="--sc:${s.color}" onclick="setSplit(${i})">${s.label}</button>`).join('');
+}
+function setSplit(i){activeSplit=i;openEx=null;buildSplitNav();buildLiftMain();}
+
+function buildRPTTracker(key){
+  const sets=[{label:"Set 1 · 4–6 reps",rk:`${key}_s1w`,rk2:`${key}_s1r`},{label:"Set 2 · 6–8 reps",rk:`${key}_s2w`,rk2:`${key}_s2r`},{label:"Set 3 · 8–10 reps",rk:`${key}_s3w`,rk2:`${key}_s3r`}];
+  const rows=sets.map((s,i)=>`<div class="tracker-row"><span class="tracker-set">${s.label}</span><input class="tracker-input" type="number" placeholder="lbs" value="${lsGet(s.rk)}" onchange="lsSet('${s.rk}',this.value)" inputmode="numeric"><span class="tracker-x">×</span><input class="tracker-input" type="number" placeholder="reps" value="${lsGet(s.rk2)}" onchange="lsSet('${s.rk2}',this.value)" inputmode="numeric"></div>`).join('');
+  return`<div class="tracker-block"><div class="tracker-label" style="color:#c8a96e">Last Session — RPT</div>${rows}</div>`;
+}
+
+function buildPyramaxTracker(key){
+  const stages=[{label:"8-rep max",rk:`${key}_8`},{label:"4-rep max",rk:`${key}_4`},{label:"2-rep max",rk:`${key}_2`},{label:"1-rep max",rk:`${key}_1`}];
+  const rows=stages.map(s=>`<div class="pyramax-row"><span class="pyramax-set">${s.label}</span><input class="pyramax-input" type="number" placeholder="lbs" value="${lsGet(s.rk)}" onchange="lsSet('${s.rk}',this.value)" inputmode="numeric"><span class="pyramax-unit">lbs</span></div>`).join('');
+  return`<div class="pyramax-block"><div class="pyramax-label" style="color:#e8a05e">Last Session — Pyramax</div><div class="pyramax-desc">Start light · climb in 5–10 lb jumps at 8 reps → 4 reps → 2 reps → 1 rep until failure at each stage.</div>${rows}</div>`;
+}
+
+function buildSchemeBadge(scheme){
+  if(scheme==='rpt') return`<span class="scheme-badge" style="color:#c8a96e;border-color:rgba(200,169,110,0.4)">RPT</span>`;
+  if(scheme==='pyramax') return`<span class="scheme-badge" style="color:#e8a05e;border-color:rgba(232,160,94,0.4)">Pyramax</span>`;
+  return'';
+}
+
+function buildLiftMain(){
+  const sp=SPLITS[activeSplit];
+  const co=sp.callout?`<div class="callout"><div class="callout-title">${sp.callout.title}</div><div class="callout-text">${sp.callout.text}</div></div>`:'';
+  let idx=0;
+  const secs=sp.sections.map(sec=>{
+    const sl=sec.mob?`<div class="sec-label" style="color:${sp.color}88">⬤ ${sec.label}</div>`:sec.superset?`<div class="superset-badge">⟳ Superset — ${sec.label}</div>`:`<div class="sec-label">${sec.label}</div>`;
+    const exs=sec.exercises.map(ex=>{
+      const key=`${activeSplit}-${idx}`;const isOpen=openEx===key;idx++;
+      let tracker='';
+      if(isOpen){
+        if(ex.scheme==='rpt'&&ex.key) tracker=buildRPTTracker(ex.key);
+        else if(ex.scheme==='pyramax'&&ex.key) tracker=buildPyramaxTracker(ex.key);
+      }
+      return`<div class="ex-card"><div class="ex-head" onclick="toggleEx('${key}')"><div class="ex-num">${String(idx).padStart(2,'0')}</div><div class="ex-main"><div class="ex-name">${ex.n}<span class="ex-tag" style="color:${ex.tc};border:1px solid ${ex.tc}44">${ex.tag}</span>${buildSchemeBadge(ex.scheme)}</div><div class="ex-sets">${ex.sets}</div></div><div class="ex-chev${isOpen?' open':''}">+</div></div><div class="ex-body${isOpen?' open':''}"><div class="ex-cue">${ex.cue}</div>${tracker}<div class="ex-why">Why: ${ex.why}</div></div></div>`;
+    }).join('');
+    return sl+exs;
+  }).join('');
+  document.getElementById('main').innerHTML=`<div class="split-header"><div class="split-title" style="color:${sp.color}">${sp.fullLabel}</div><div class="split-meta" style="color:#7eb87e;margin-top:5px">⏱ ${sp.schedule}</div><div class="split-sched" style="border-left-color:${sp.color};margin-top:10px">${sp.sched}</div></div>${co}${secs}`;
+}
+function toggleEx(key){openEx=openEx===key?null:key;buildLiftMain();}
+
+function buildMobMain(){
+  const cards=MOB_DAYS.map((d,i)=>{
+    const isOpen=openMobDay===i;
+    const moves=d.moves.map(m=>`<div class="mob-move"><div class="mob-time">${m.time}</div><div class="mob-info"><div class="mob-move-name">${m.name}</div><div class="mob-move-detail">${m.detail}</div></div></div>`).join('');
+    return`<div class="mob-day-card"><div class="mob-day-head" onclick="toggleMobDay(${i})"><div class="mob-day-dot" style="background:${d.color}"></div><div><div class="mob-day-name">${d.day}</div><div class="mob-day-focus" style="color:${d.color}">${d.focus}</div></div><div style="flex:1"></div><div class="mob-day-chev${isOpen?' open':''}">+</div></div><div class="mob-day-body${isOpen?' open':''}"><div class="mob-tag">${d.context}</div>${moves}</div></div>`;
+  }).join('');
+  document.getElementById('main').innerHTML=`<div class="phase-header"><div><div class="phase-title" style="color:#9e78c8">Daily Mobility</div><div class="phase-sub">5 min per training day · all key areas covered across the week</div></div></div><div class="callout" style="border-color:#2a1e2a"><div class="callout-title" style="color:#9e78c8">How to Use This</div><div class="callout-text">Do your assigned day's routine on every training day. Thursday's ankle routine goes BEFORE your leg workout. Friday's hamstring routine goes AFTER your run as a cooldown. All others go before lifting. Each routine is 5 minutes.</div></div>${cards}`;
+}
+function toggleMobDay(i){openMobDay=openMobDay===i?null:i;buildMobMain();}
+
+function buildDietMain(){
+  const d=DIET;
+  const statsHtml=`<div class="diet-hero"><div class="diet-hero-title">185 lb Transformation Plan</div><div class="diet-stats"><div class="diet-stat"><div class="diet-stat-val">${d.target.protein}</div><div class="diet-stat-lbl">Daily Protein</div></div><div class="diet-stat"><div class="diet-stat-val">${d.target.weight}</div><div class="diet-stat-lbl">Target Weight</div></div><div class="diet-stat" style="flex:2"><div class="diet-stat-val" style="font-size:12px;padding-top:4px">${d.target.approach}</div><div class="diet-stat-lbl">Philosophy</div></div></div></div>`;
+  const mealCards=d.meals.map((m,i)=>{
+    const isOpen=openMeal===i;
+    const pBadge=m.protein?`<span class="meal-protein" style="color:${m.proteinColor};border-color:${m.proteinColor}44">${m.protein}</span>`:`<span class="meal-protein none">—</span>`;
+    const optHtml=m.options.map(o=>`<div class="meal-option"><div class="meal-opt-label">${o.label}</div><div class="meal-opt-detail">${o.detail}</div></div>`).join('');
+    const runNote=m.runNote?`<div class="meal-run-note">🏃 ${m.runNote}</div>`:'';
+    return`<div class="meal-card"><div class="meal-head" onclick="toggleMeal(${i})"><div class="meal-time">${m.time}</div><div class="meal-dot" style="background:${m.dot}"></div><div class="meal-info"><div class="meal-name">${m.name}</div><div class="meal-preview">${m.preview}</div></div>${pBadge}<div class="meal-chev${isOpen?' open':''}">+</div></div><div class="meal-body${isOpen?' open':''}"><div style="padding-top:4px">${optHtml}${runNote}</div></div></div>`;
+  }).join('');
+  const summaryRows=d.summary.map(r=>`<div class="ps-row"><span class="ps-meal">${r.meal}</span><span class="ps-p">${r.p}</span></div>`).join('');
+  const summaryHtml=`<div class="protein-summary"><div class="ps-label">Daily Protein Breakdown</div>${summaryRows}<div class="ps-total"><span class="ps-meal">Total Daily Target</span><span class="ps-p">${d.totalLow}–${d.totalHigh}g</span></div></div>`;
+  const tipHtml=`<div class="diet-tip"><div class="diet-tip-label">Prep Tip</div><div class="diet-tip-text">${d.tip}</div></div>`;
+  document.getElementById('main').innerHTML=`<div class="phase-header"><div><div class="phase-title" style="color:#c8a96e">Nutrition Plan</div><div class="phase-sub">High protein · robotic · built around your training schedule</div></div></div>${statsHtml}${mealCards}${summaryHtml}${tipHtml}`;
+}
+function toggleMeal(i){openMeal=openMeal===i?null:i;buildDietMain();}
+
+render();
+</script>
+</body>
+</html>
